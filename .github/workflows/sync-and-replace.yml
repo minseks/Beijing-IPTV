@@ -1,0 +1,35 @@
+name: Sync and Replace
+
+on:
+  schedule:
+    - cron:  '*/30 * * * *' # 每30分钟检查一次更新
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  sync-and-replace:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout B repo
+      uses: actions/checkout@v2
+      with:
+        repository: 'minseks/Beijing-IPTV'
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0 # 获取所有历史以便于比较
+
+    - name: Pull updates from A repo
+      run: |
+        git remote add upstream https://github.com/qwerttvv/Beijing-IPTV.git
+        git fetch upstream
+        git checkout master # 或者你的默认分支名，比如master
+        git merge upstream/master # 或者upstream的默认分支名
+
+    - name: Replace URLs in IPTV-Unicom.m3u
+      run: sed -i 's|http://192.168.123.1:23234|http://192.168.31.104:4022|g' IPTV-Unicom.m3u
+
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add IPTV-Unicom.m3u
+        git commit -m "Sync A and update URLs"
+        git push
