@@ -32,7 +32,7 @@ jobs:
     - name: Check for changes
       id: check_changes
       run: |
-        git diff --quiet || echo "CHANGED=1" >> $GITHUB_ENV
+        git diff --quiet -- IPTV-Unicom.m3u || echo "CHANGED=1" >> $GITHUB_ENV
 
     - name: Commit and push changes
       if: env.CHANGED == '1'
