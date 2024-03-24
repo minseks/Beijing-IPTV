@@ -32,11 +32,10 @@ jobs:
     - name: Check for changes
       id: check_changes
       run: |
-        git diff --quiet
-        echo "changed=$?" >> $GITHUB_ENV
+        git diff --quiet || echo "CHANGED=1" >> $GITHUB_ENV
 
     - name: Commit and push changes
-      if: env.changed == '1'
+      if: env.CHANGED == '1'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
